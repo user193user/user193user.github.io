@@ -1,0 +1,27 @@
+div {
+    height: 200px;
+    width: 500px;
+    border: 25px solid rgb(58, 58, 58);
+    border-radius: 100px;
+    padding: 20px;
+    margin: auto;
+    background-image: url("ci7_div.jpg");
+}
+p {
+    background-color: beige;
+    display: block;
+    margin: 10% 30%;
+    border-radius: 50px;
+    text-align: center;
+}
+
+audio {
+    display: block;
+    margin: auto;
+    border: 5px solid rgb(49, 49, 49);
+    border-radius: 50px;
+}
+
+body {
+    background-image: url("key.png");
+}
