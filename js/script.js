@@ -1,5 +1,7 @@
 let canvas = document.getElementById("game")
 let context = canvas.getContext("2d")
+
+let canupdate = false
 //images
 let heroimg = new Image()
 heroimg.src = "mat/hero.png"
@@ -15,9 +17,11 @@ const groundh = 10
 const firstherox = 10
 const ug = 0.5
 const dg = 0.5
-const da = 20
-const pldx = -6 
+const da = 10
+const pldx = 5 
 const jumph = canvas.clientHeight / 3 
+const jerkl = canvas.clientWidth / 5
+
 
 //global per
 let timer = 1
@@ -39,11 +43,22 @@ let plobject = {
 }
 
 let walls = []
+/*let wobject = {
+    ocol: {
+        w: 0,
+        h: 0
+    }
+}*/
+
 
 let fally = 0
 let isjumping = false
 let isfallingjerk = false
 let jumpscnt = 0
+
+let isrightjerk = false
+let ax = 1 
+let jerkdelay = 50
 
 let gameover = false
 //func
@@ -74,7 +89,7 @@ function handleGesture()
         swipeUp()
     else if (Math.abs(touchendX - touchstartX) > Math.abs(touchendY - touchstartY)) 
         if(touchendX > touchstartX)
-            console.log('Swiped right')
+            swipeRight()
         else
             console.log('Swiped left')
     else
@@ -106,13 +121,24 @@ function swipeDown()
         fally = hero.y + hero.h + 1
     }
 }
+
+function swipeRight()
+{
+    if(!isrightjerk && hero.dx == 0)
+    {
+        isrightjerk = true
+        hero.dx = Math.round(Math.sqrt(2*ax*jerkl))
+    }
+}
 ////////////////////////////////////////////
 
 platformimg.onload = function () 
 {
-    hero.y = canvas.clientHeight - heroimg.height - groundh
+    //resizeCanvas()
+    hero.y = canvas.height - heroimg.height - groundh
     hero.w = heroimg.width
     hero.h = heroimg.height
+
     plobject.plcol.w = platformimg.width*2
     plobject.plcol.h = platformimg.height
     plobject.plmargin.top = canvas.clientHeight / 8
@@ -135,17 +161,42 @@ function game()
 
 function update()
 {
-    for(let i in walls)
+    updatelets()
+    spawn()
+    move()
+    updateplatforms()
+    destroyer()
+}
+
+function updatelets()
+{
+    let j = 0
+    while(j < walls.length)
     {
-        if(iscollision(walls[i]))
+        if(iscollision(walls[j]))
         {
-            gameover = true
-            alert("Game over!")
-            return
+            console.log(walls[j])
+            if(isrightjerk)
+            {
+                walls.splice(j, 1)
+                hero.dx = 0
+                continue
+            }
+            else
+            {
+                gameover = true
+                alert("Game over!")
+                return
+            }
         }
-        walls[i].x += walls[i].dx
+        walls[j].x -= walls[j].dx
+        j++
     }
-    if(timer % 50 == 0)
+}
+
+function spawn()
+{
+    if(timer % 75 == 0)
     {
         let availablespawny = []
         let spawnstep = 10
@@ -190,13 +241,19 @@ function update()
     }
     if(timer % 200 == 0)
     {
-        timer = 0
         walls.push({
             x: canvas.clientWidth, 
             y: canvas.clientHeight - 25, 
             w: 100, 
-            h: 25, dx: pldx})
+            h: 25, 
+            dx: pldx})
     }
+    if(timer == 200 * 75)
+        timer = 0
+}
+
+function move()
+{
     if(isjumping)
     {
         if(hero.dy > 0)
@@ -207,7 +264,8 @@ function update()
         }
         else
         {
-            for(i in platforms)
+            let flag = true
+            for(let i in platforms)
                 if(isstandon(platforms[i]) && platforms[i].y > fally)
                 {
                     hero.y = platforms[i].y - hero.h
@@ -215,14 +273,15 @@ function update()
                     jumpscnt = 0
                     isjumping = false
                     isfallingjerk = false
-                    return
+                    flag = false
+                    break
                 }
-            if(hero.y - hero.dy < canvas.clientHeight - heroimg.height - groundh)
+            if(hero.y - hero.dy < canvas.clientHeight - heroimg.height - groundh && flag)
             {
                 hero.y -= hero.dy
                 hero.dy -= dg
             }
-            else
+            else if(flag)
             {
                 hero.y = canvas.clientHeight - heroimg.height - groundh
                 hero.dy = 0
@@ -232,11 +291,36 @@ function update()
             }
         }
     }
+    if(isrightjerk)
+    {
+        console.log("jerk")
+        hero.x += hero.dx
+        hero.dx -= ax
+        if(hero.dx <= 0)
+        {
+            hero.dx = -2*ax
+            isrightjerk = false
+        }
+    }
+    else if(hero.dx < 0)
+    {
+        console.log("return")
+        hero.x += hero.dx
+        if(hero.x <= firstherox)
+        {
+            hero.x = firstherox
+            hero.dx = 0
+        }
+    }
+}
+
+function updateplatforms()
+{
     //проверка на падение с платформы
     let interf = false
     for(let i in platforms)
     {
-        platforms[i].x += platforms[i].dx
+        platforms[i].x -= platforms[i].dx
         if(isstandon(platforms[i]))
             interf = true
     }
@@ -247,6 +331,10 @@ function update()
         jumpscnt = 1
         hero.dy = 0
     }
+}
+
+function destroyer()
+{
     //удаление
     let ind = 0
     while(ind < platforms.length)
@@ -289,26 +377,44 @@ function iscollision(object)
 
 function render()
 {
-    context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight)
+    context.clearRect(0, 0, canvas.width, canvas.height)
     for(i in platforms)
         context.drawImage(platformimg, platforms[i].x, platforms[i].y, platforms[i].w, platforms[i].h)
     for(i in walls)
         context.drawImage(wallimg, walls[i].x, walls[i].y, walls[i].w, walls[i].h)
-    context.drawImage(heroimg, hero.x, hero.y)
+    context.drawImage(heroimg, hero.x, hero.y, hero.w, hero.h)
 }
 
 let requestAnimFrame = 
 (
     function () 
     {
-        /*return window.requestAnimationFrame ||
+        return window.requestAnimationFrame ||
             window.webkitRequestAnimationFrame ||
             window.mozRequestAnimationFrame ||
             window.oRequestAnimationFrame ||
-            window.msRequestAnimationFrame ||*/
-        return function(callback)
+            window.msRequestAnimationFrame ||
+            function(callback)
             {
                 window.setTimeout(callback, 1000/100)
             }
     }
 )()
+
+////not game's part
+/*
+window.onresize = function() 
+{
+    resizeCanvas()
+}
+
+function resizeCanvas()
+{
+    canvas.width = window.innerWidth*0.6
+    canvas.height = canvas.width*9/16
+    plobject.plcol.h = canvas.height / 25
+    plobject.plcol.w = canvas.width / 4
+    let khero = canvas.height / 15 * 4 / heroimg.height
+    hero.h = heroimg.height * khero
+    hero.w = heroimg.width * khero
+}*/
