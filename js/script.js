@@ -4,13 +4,31 @@ let context = canvas.getContext("2d")
 let canupdate = false
 //images
 let heroimg = new Image()
-heroimg.src = "mat/hero.png"
+heroimg.src = "mat/hero1.png"
+let herokadr = 0
+let kolkadr = 10
 
 let wallimg = new Image()
 wallimg.src = "mat/wall.png"
 
 let platformimg = new Image()
 platformimg.src = "mat/platform.png"
+
+let plpartimg= new Image()
+plpartimg.src = "mat/plpart.png"
+
+let lavacntpartimg= new Image()
+lavacntpartimg.src = "mat/lavacentralpart.png"
+
+let lavaendpartimg= new Image()
+lavaendpartimg.src = "mat/lavaendpart.png"
+
+let fonimg = new Image()
+fonimg.src = "mat/fon1.png"
+let fons = []
+let kscale = 1
+const Cfondx = 4
+let fondx
 
 //global const
 const cnvh = 600
@@ -41,14 +59,16 @@ let hero = {
         x: firstherox, 
         y: 0,
         w: 0, 
-        h: 0 
+        h: 0
     },
     himg: {
         x: firstherox, 
         y: 0,
         w: 0,
         h: 0
-    }
+    },
+    dy: 0,
+    dx: 0
 }
 let platforms = []
 let maxspawny
@@ -69,6 +89,20 @@ let plobject = {
 let walls = []
 let wobject = {
     wcol: {
+        w: 0,
+        h: 0
+    },
+    wimg: {
+        w: 0,
+        h: 0,
+        dx: 0,
+        dy: 0
+    }
+}
+
+let lavas = []
+let lobject = {
+    limg: {
         w: 0,
         h: 0
     }
@@ -125,7 +159,7 @@ function handleGesture()
 
 function swipeUp()
 {
-    console.log(jumpscnt)
+    //console.log(jumpscnt)
     if(jumpscnt <= 1)
     {
         jumpscnt++
@@ -157,14 +191,24 @@ function swipeRight()
 }
 ////////////////////////////////////////////
 
-platformimg.onload = function () 
+heroimg.onload = function () 
 {
+    kscale = cnvh / fonimg.height
+    let pokrx = 0
+    while(pokrx < canvas.width)
+    {
+        fons.push({x: pokrx, y: 0})
+        pokrx += fonimg.width * kscale
+    }
     resizeCanvas()
     game()
 }
 
 function game()
 {
+    if(timer % 10 == 0)
+        herokadr++
+    herokadr %= kolkadr
     timer++
     if(!gameover)
         update()
@@ -181,6 +225,8 @@ function update()
     move()
     updateplatforms()
     destroyer()
+
+    updatefon()
 }
 
 function updatelets()
@@ -236,21 +282,25 @@ function spawn()
         if(availablespawny.length)
         {
             let spawny = availablespawny[randomInteger(0, availablespawny.length - 1)]
-            let spawnw = (Math.random() + 1)*plobject.plcol.w
+            let spawnw = Math.round((Math.random() + 1)*plobject.plcol.w / plobject.plcol.h) //kolpart
             platforms.push({
-                x: canvas.clientWidth, 
+                x: canvas.width, 
                 y: spawny, 
-                w: spawnw, 
+                w: spawnw*plobject.plcol.h, 
                 h: plobject.plcol.h, 
-                dx: pldx})
+                dx: pldx,
+                kolplpart: spawnw
+            })
             if(Math.random() < 0.5)
             {
                 walls.push({
                     x: canvas.width + Math.random() * (spawnw - 2*wobject.wcol.w) + wobject.wcol.w, 
-                    y: spawny - wobject.wcol.h, 
+                    y: spawny - wobject.wcol.h - wobject.wimg.dy, 
                     w: wobject.wcol.w, 
                     h: wobject.wcol.h, 
-                    dx: pldx})
+                    dx: pldx,
+                    type: "wall"
+                })
             }            
         }
     }
@@ -259,9 +309,11 @@ function spawn()
         walls.push({
             x: canvas.width, 
             y: canvas.height - groundh - 1, 
-            w: wobject.wcol.w*4, 
-            h: wobject.wcol.h/2, 
-            dx: pldx})
+            w: wobject.wcol.w, 
+            h: wobject.wcol.h, 
+            dx: pldx,
+            type: "lava"
+        })
     }
     if(timer == 200 * 75)
         timer = 0
@@ -286,7 +338,7 @@ function move()
                     hero.hcol.y = platforms[i].y - hero.hcol.h
                     hero.dy = 0
                     jumpscnt = 0
-                    console.log("standon")
+                    //console.log("standon")
                     isjumping = false
                     isfallingjerk = false
                     flag = false
@@ -302,7 +354,7 @@ function move()
                 hero.hcol.y = canvas.clientHeight - hero.hcol.h - groundh
                 hero.dy = 0
                 jumpscnt = 0
-                console.log("flag")
+                //console.log("flag")
                 isjumping = false
                 isfallingjerk = false
             }
@@ -310,7 +362,7 @@ function move()
     }
     if(isrightjerk)
     {
-        console.log("jerk")
+        //console.log("jerk")
         hero.hcol.x += hero.dx
         hero.dx -= ax
         if(hero.dx <= 0)
@@ -321,7 +373,7 @@ function move()
     }
     else if(hero.dx < 0)
     {
-        console.log("return")
+        //console.log("return")
         hero.hcol.x += hero.dx
         if(hero.hcol.x <= firstherox)
         {
@@ -341,13 +393,13 @@ function updateplatforms()
         if(isstandon(platforms[i]))
         {
             interf = true
-            console.log(platforms[i])
+            //console.log(platforms[i])
         }
     }
     //падение с платформы
-    if(!interf && hero.hcol.y < canvas.height - hero.h - groundh && !isjumping)
+    if(!interf && hero.hcol.y < canvas.height - hero.hcol.h - groundh && !isjumping)
     {
-        console.log("interfere")
+        //console.log("interfere")
         isjumping = true
         jumpscnt = 1
         hero.dy = 0
@@ -375,6 +427,23 @@ function destroyer()
     }
 }
 
+function updatefon()
+{
+    let ind = 0
+    while(ind < fons.length)
+    {
+        fons[ind].x -= fondx
+        if(fons[ind].x + fonimg.width * kscale < 0)
+            fons.splice(ind, 1)
+        else
+            ind++
+    }
+    if(fons.length == 0)
+        fons.push({x: 0, y: 0})
+    else if(fons[fons.length - 1].x + fonimg.width * kscale < canvas.width)
+        fons.push({x: fons[fons.length - 1].x + fonimg.width * kscale, y: 0})
+}
+
 function randomInteger(min, max) 
 {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -388,22 +457,80 @@ function isstandon(platform)
 
 function iscollision(object)
 {
-    let points = [{x: hero.hcol.x, y: hero.hcol.y}, {x: hero.hcol.x + hero.hcol.w, y: hero.hcol.y}, {x: hero.hcol.x + hero.hcol.w, y: hero.hcol.y + hero.hcol.h}, {x: hero.hcol.x, y: hero.hcol.y + hero.hcol.h}]
-    for(let i in points)
-        if(points[i].x >= object.x && points[i].x <= object.x + object.w &&
-            points[i].y >= object.y && points[i].y <= object.y + object.h)
-            return true
-    return false
+    let hotrx = {
+        x1: hero.hcol.x,
+        x2: hero.hcol.x + hero.hcol.w
+    }
+    let hotry = {
+        y1: hero.hcol.y,
+        y2: hero.hcol.y + hero.hcol.h
+    }
+    let ootrx = {
+        x1: object.x,
+        x2: object.x + object.w
+    }
+    let ootry = {
+        y1: object.y,
+        y2: object.y + object.h
+    }
+    let f1 = false, f2 = false
+    if(hotrx.x1 < ootrx.x1)
+    {
+        if(hotrx.x2 >= ootrx.x1)
+            f1 = true
+    }
+    else
+    {
+        if(ootrx.x2 >= hotrx.x1)
+            f1 = true
+    }
+    if(hotry.y1 < ootry.y1)
+    {
+        if(hotry.y2 >= ootry.y1)
+            f2 = true
+    }
+    else
+    {
+        if(ootry.y2 >= hotry.y1)
+            f2 = true
+    }
+    if(f1 && f2)
+        return true
+    else
+        return false
 }
 
 function render()
 {
     context.clearRect(0, 0, canvas.width, canvas.height)
+
+    for(i in fons)
+        context.drawImage(fonimg, fons[i].x, 0, fonimg.width * kscale, fonimg.height * kscale)
     for(i in platforms)
-        context.drawImage(platformimg, platforms[i].x, platforms[i].y, platforms[i].w, platforms[i].h)
+        drawplatform(platforms[i])
     for(i in walls)
-        context.drawImage(wallimg, walls[i].x, walls[i].y, walls[i].w, walls[i].h)
-    context.drawImage(heroimg, hero.hcol.x, hero.hcol.y, hero.himg.w, hero.hcol.h)
+        context.drawImage(wallimg, 
+            walls[i].x - wobject.wimg.dx, 
+            walls[i].y - wobject.wimg.dy, 
+            wobject.wimg.w, 
+            wobject.wimg.h)
+    context.drawImage(heroimg, herokadr * heroimg.width / kolkadr, 0, heroimg.width / kolkadr, heroimg.height, 
+        hero.hcol.x - (hero.himg.w - hero.hcol.w) / 2, 
+        hero.hcol.y - (hero.himg.h - hero.hcol.h), 
+        hero.himg.w, 
+        hero.himg.h)
+}
+
+function drawplatform(platform)
+{
+    let lx = platform.x
+    let kol = 0
+    while(kol < platform.kolplpart)
+    {
+        context.drawImage(plpartimg, lx, platform.y, platform.h, platform.h)
+        lx += platform.h
+        kol++
+    }
 }
 
 let requestAnimFrame = 
@@ -433,16 +560,17 @@ function resizeCanvas()
 {
     canvas.width = window.innerWidth*0.6
     canvas.height = canvas.width*cnvh/cnvw
-    let k = 1.0*canvas.height / cnvh
+    let k = canvas.height / cnvh
 
     groundh = Math.round(k * cnvh / 100)
     firstherox = Math.round(canvas.height / 60)
 
     hero.hcol.h = Math.round(k * cnvh / 8)
-    hero.hcol.w = Math.round(heroimg.width * hero.hcol.h / heroimg.height)
+    hero.hcol.w = Math.round(heroimg.width / kolkadr * hero.hcol.h / heroimg.height)
     hero.hcol.y = canvas.height - hero.hcol.h - groundh
     hero.hcol.x = firstherox
-    hero.himg.w = hero.hcol.w / 0.5
+    hero.himg.w = Math.round(hero.hcol.w / 0.8)
+    hero.himg.h = Math.round(hero.hcol.h / 0.8)
 
     plobject.plcol.w = Math.round(k*platformimg.width*2)
     plobject.plcol.h = Math.round(platformimg.height*0.8*k)
@@ -451,8 +579,13 @@ function resizeCanvas()
     minspawny = hero.hcol.h + Math.round(canvas.height / 60.0)
     maxspawny = canvas.height - hero.hcol.h - groundh - Math.round(canvas.height / 60.0)
 
-    wobject.wcol.w = Math.round(k*25)
-    wobject.wcol.h = Math.round(50*k)
+    wobject.wcol.h = Math.round(k*0.05*cnvh)
+    wobject.wcol.w = Math.round(wallimg.width*wobject.wcol.h/wallimg.height)
+    console.log(wobject.wcol.h + " " + wobject.wcol.w)
+    wobject.wimg.w = Math.round(wobject.wcol.w / 0.5)
+    wobject.wimg.h = Math.round(wobject.wcol.h / 0.5)
+    wobject.wimg.dx = (wobject.wimg.w - wobject.wcol.w) / 2
+    wobject.wimg.dy = (wobject.wimg.h - wobject.wcol.h) / 2
 
     for(i in platforms)
     {
@@ -470,6 +603,8 @@ function resizeCanvas()
         walls[i].y = walls[i].y / predk * k
     }
 
+
+
     firstherox = Math.round(canvas.height / 60.0)
     ug = Cug * k
     dg = Cdg * k
@@ -477,6 +612,11 @@ function resizeCanvas()
     pldx = Cpldx * k 
     jumph = canvas.height / 3 
     jerkl = canvas.width / 5
+
+    fondx = k * Cfondx
+    kscale = canvas.height / fonimg.height
+    for(i in fons)
+        fons[i].x = fons[i].x / predk * k
 
     predk = k
     console.log(ug + " " + dg + " " + da + " " + pldx)
