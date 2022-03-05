@@ -13,19 +13,43 @@ let platformimg = new Image()
 platformimg.src = "mat/platform.png"
 
 //global const
-const groundh = 10
-const firstherox = 10
-const ug = 0.5
-const dg = 0.5
-const da = 10
-const pldx = 5 
-const jumph = canvas.clientHeight / 3 
-const jerkl = canvas.clientWidth / 5
+const cnvh = 600
+const cnvw = 1200
+const Cgroundh = 10
+const Cfirstherox = 10
+const Cug = 0.4
+const Cdg = 0.4
+const Cda = 14
+const Cpldx = 5
+
+let predk = 1
+
+let groundh
+let firstherox
+let ug
+let dg 
+let da
+let pldx
+let jumph
+let jerkl
 
 
 //global per
-let timer = 1
-let hero = {x: firstherox, y: 0, w: 0, h: 0, dx: 0, dy: 0}
+let timer = 0
+let hero = {
+    hcol: {
+        x: firstherox, 
+        y: 0,
+        w: 0, 
+        h: 0 
+    },
+    himg: {
+        x: firstherox, 
+        y: 0,
+        w: 0,
+        h: 0
+    }
+}
 let platforms = []
 let maxspawny
 let minspawny
@@ -43,12 +67,12 @@ let plobject = {
 }
 
 let walls = []
-/*let wobject = {
-    ocol: {
+let wobject = {
+    wcol: {
         w: 0,
         h: 0
     }
-}*/
+}
 
 
 let fally = 0
@@ -57,7 +81,7 @@ let isfallingjerk = false
 let jumpscnt = 0
 
 let isrightjerk = false
-let ax = 1 
+let ax = 1
 let jerkdelay = 50
 
 let gameover = false
@@ -101,6 +125,7 @@ function handleGesture()
 
 function swipeUp()
 {
+    console.log(jumpscnt)
     if(jumpscnt <= 1)
     {
         jumpscnt++
@@ -118,7 +143,7 @@ function swipeDown()
         hero.dy = -da
         isjumping = true
         isfallingjerk = true
-        fally = hero.y + hero.h + 1
+        fally = hero.hcol.y + hero.hcol.h + 1
     }
 }
 
@@ -134,17 +159,7 @@ function swipeRight()
 
 platformimg.onload = function () 
 {
-    //resizeCanvas()
-    hero.y = canvas.height - heroimg.height - groundh
-    hero.w = heroimg.width
-    hero.h = heroimg.height
-
-    plobject.plcol.w = platformimg.width*2
-    plobject.plcol.h = platformimg.height
-    plobject.plmargin.top = canvas.clientHeight / 8
-    plobject.plmargin.bottom = canvas.clientHeight / 8
-    minspawny = hero.h + 10
-    maxspawny = canvas.clientHeight - hero.h - groundh - 10
+    resizeCanvas()
     game()
 }
 
@@ -175,7 +190,6 @@ function updatelets()
     {
         if(iscollision(walls[j]))
         {
-            console.log(walls[j])
             if(isrightjerk)
             {
                 walls.splice(j, 1)
@@ -189,7 +203,7 @@ function updatelets()
                 return
             }
         }
-        walls[j].x -= walls[j].dx
+        walls[j].x -= pldx
         j++
     }
 }
@@ -199,9 +213,10 @@ function spawn()
     if(timer % 75 == 0)
     {
         let availablespawny = []
-        let spawnstep = 10
+        let spawnstep = Math.round(canvas.height / 60.0)              ///!!!
+        if(spawnstep == 0)                                            ///!!!
+            spawnstep = 1                                             ///!!!
         let tempy = maxspawny
-        console.log()
         while(tempy >= minspawny)
         {
             let flag = true
@@ -231,10 +246,10 @@ function spawn()
             if(Math.random() < 0.5)
             {
                 walls.push({
-                    x: canvas.clientWidth + Math.random() * (spawnw - 50) + 25, 
-                    y: spawny - 50, 
-                    w: 25, 
-                    h: 50, 
+                    x: canvas.width + Math.random() * (spawnw - 2*wobject.wcol.w) + wobject.wcol.w, 
+                    y: spawny - wobject.wcol.h, 
+                    w: wobject.wcol.w, 
+                    h: wobject.wcol.h, 
                     dx: pldx})
             }            
         }
@@ -242,10 +257,10 @@ function spawn()
     if(timer % 200 == 0)
     {
         walls.push({
-            x: canvas.clientWidth, 
-            y: canvas.clientHeight - 25, 
-            w: 100, 
-            h: 25, 
+            x: canvas.width, 
+            y: canvas.height - groundh - 1, 
+            w: wobject.wcol.w*4, 
+            h: wobject.wcol.h/2, 
             dx: pldx})
     }
     if(timer == 200 * 75)
@@ -258,8 +273,8 @@ function move()
     {
         if(hero.dy > 0)
         {
-            hero.y -= hero.dy
-            hero.y = Math.max(0, hero.y)
+            hero.hcol.y -= hero.dy
+            hero.hcol.y = Math.max(0, hero.hcol.y)
             hero.dy -= ug
         }
         else
@@ -268,24 +283,26 @@ function move()
             for(let i in platforms)
                 if(isstandon(platforms[i]) && platforms[i].y > fally)
                 {
-                    hero.y = platforms[i].y - hero.h
+                    hero.hcol.y = platforms[i].y - hero.hcol.h
                     hero.dy = 0
                     jumpscnt = 0
+                    console.log("standon")
                     isjumping = false
                     isfallingjerk = false
                     flag = false
                     break
                 }
-            if(hero.y - hero.dy < canvas.clientHeight - heroimg.height - groundh && flag)
+            if(hero.hcol.y - hero.dy < canvas.clientHeight - hero.hcol.h - groundh && flag)
             {
-                hero.y -= hero.dy
+                hero.hcol.y -= hero.dy
                 hero.dy -= dg
             }
             else if(flag)
             {
-                hero.y = canvas.clientHeight - heroimg.height - groundh
+                hero.hcol.y = canvas.clientHeight - hero.hcol.h - groundh
                 hero.dy = 0
                 jumpscnt = 0
+                console.log("flag")
                 isjumping = false
                 isfallingjerk = false
             }
@@ -294,7 +311,7 @@ function move()
     if(isrightjerk)
     {
         console.log("jerk")
-        hero.x += hero.dx
+        hero.hcol.x += hero.dx
         hero.dx -= ax
         if(hero.dx <= 0)
         {
@@ -305,10 +322,10 @@ function move()
     else if(hero.dx < 0)
     {
         console.log("return")
-        hero.x += hero.dx
-        if(hero.x <= firstherox)
+        hero.hcol.x += hero.dx
+        if(hero.hcol.x <= firstherox)
         {
-            hero.x = firstherox
+            hero.hcol.x = firstherox
             hero.dx = 0
         }
     }
@@ -320,13 +337,17 @@ function updateplatforms()
     let interf = false
     for(let i in platforms)
     {
-        platforms[i].x -= platforms[i].dx
+        platforms[i].x -= pldx
         if(isstandon(platforms[i]))
+        {
             interf = true
+            console.log(platforms[i])
+        }
     }
     //падение с платформы
-    if(!interf && hero.y < canvas.clientHeight - heroimg.height - groundh && !isjumping)
+    if(!interf && hero.hcol.y < canvas.height - hero.h - groundh && !isjumping)
     {
+        console.log("interfere")
         isjumping = true
         jumpscnt = 1
         hero.dy = 0
@@ -361,13 +382,13 @@ function randomInteger(min, max)
 
 function isstandon(platform)
 {
-    return (hero.y + hero.h <= platform.y && hero.y + hero.h - hero.dy >= platform.y) && 
-    hero.x + hero.w > platform.x && hero.x < platform.x + platform.w
+    return (hero.hcol.y + hero.hcol.h <= platform.y && hero.hcol.y + hero.hcol.h - hero.dy >= platform.y) && 
+    hero.hcol.x + hero.hcol.w > platform.x && hero.hcol.x < platform.x + platform.w
 }
 
 function iscollision(object)
 {
-    let points = [{x: hero.x, y: hero.y}, {x: hero.x + hero.w, y: hero.y}, {x: hero.x + hero.w, y: hero.y + hero.h}, {x: hero.x, y: hero.y + hero.h}]
+    let points = [{x: hero.hcol.x, y: hero.hcol.y}, {x: hero.hcol.x + hero.hcol.w, y: hero.hcol.y}, {x: hero.hcol.x + hero.hcol.w, y: hero.hcol.y + hero.hcol.h}, {x: hero.hcol.x, y: hero.hcol.y + hero.hcol.h}]
     for(let i in points)
         if(points[i].x >= object.x && points[i].x <= object.x + object.w &&
             points[i].y >= object.y && points[i].y <= object.y + object.h)
@@ -382,7 +403,7 @@ function render()
         context.drawImage(platformimg, platforms[i].x, platforms[i].y, platforms[i].w, platforms[i].h)
     for(i in walls)
         context.drawImage(wallimg, walls[i].x, walls[i].y, walls[i].w, walls[i].h)
-    context.drawImage(heroimg, hero.x, hero.y, hero.w, hero.h)
+    context.drawImage(heroimg, hero.hcol.x, hero.hcol.y, hero.himg.w, hero.hcol.h)
 }
 
 let requestAnimFrame = 
@@ -402,7 +423,7 @@ let requestAnimFrame =
 )()
 
 ////not game's part
-/*
+
 window.onresize = function() 
 {
     resizeCanvas()
@@ -411,10 +432,52 @@ window.onresize = function()
 function resizeCanvas()
 {
     canvas.width = window.innerWidth*0.6
-    canvas.height = canvas.width*9/16
-    plobject.plcol.h = canvas.height / 25
-    plobject.plcol.w = canvas.width / 4
-    let khero = canvas.height / 15 * 4 / heroimg.height
-    hero.h = heroimg.height * khero
-    hero.w = heroimg.width * khero
-}*/
+    canvas.height = canvas.width*cnvh/cnvw
+    let k = 1.0*canvas.height / cnvh
+
+    groundh = Math.round(k * cnvh / 100)
+    firstherox = Math.round(canvas.height / 60)
+
+    hero.hcol.h = Math.round(k * cnvh / 8)
+    hero.hcol.w = Math.round(heroimg.width * hero.hcol.h / heroimg.height)
+    hero.hcol.y = canvas.height - hero.hcol.h - groundh
+    hero.hcol.x = firstherox
+    hero.himg.w = hero.hcol.w / 0.5
+
+    plobject.plcol.w = Math.round(k*platformimg.width*2)
+    plobject.plcol.h = Math.round(platformimg.height*0.8*k)
+    plobject.plmargin.top = canvas.height / 8
+    plobject.plmargin.bottom = canvas.height / 8
+    minspawny = hero.hcol.h + Math.round(canvas.height / 60.0)
+    maxspawny = canvas.height - hero.hcol.h - groundh - Math.round(canvas.height / 60.0)
+
+    wobject.wcol.w = Math.round(k*25)
+    wobject.wcol.h = Math.round(50*k)
+
+    for(i in platforms)
+    {
+        platforms[i].w = platforms[i].w / predk * k
+        platforms[i].h = platforms[i].h / predk * k
+        platforms[i].x = platforms[i].x / predk * k
+        platforms[i].y = platforms[i].y / predk * k
+    }
+
+    for(i in walls)
+    {
+        walls[i].w = walls[i].w / predk * k
+        walls[i].h = walls[i].h / predk * k
+        walls[i].x = walls[i].x / predk * k
+        walls[i].y = walls[i].y / predk * k
+    }
+
+    firstherox = Math.round(canvas.height / 60.0)
+    ug = Cug * k
+    dg = Cdg * k
+    da = Cda * k
+    pldx = Cpldx * k 
+    jumph = canvas.height / 3 
+    jerkl = canvas.width / 5
+
+    predk = k
+    console.log(ug + " " + dg + " " + da + " " + pldx)
+}
