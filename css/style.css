@@ -1,8 +1,13 @@
-.wrapper {
+#wrapper {
     display: flex;
 }
 
 #game {
     background-color: rgb(204, 255, 255);
     margin: 0px auto;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
 }
