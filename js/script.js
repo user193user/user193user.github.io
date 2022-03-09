@@ -1,7 +1,12 @@
 let canvas = document.getElementById("game")
 let context = canvas.getContext("2d")
 
+let device
+if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent)) {
 
+    device = "notPC"
+
+} else device = "PC"
 
 //global const
 const cnvh = 600
@@ -1102,8 +1107,9 @@ window.onresize = function()
 
 function resizeCanvas(startrisize)
 {
-    //console.log(window.devicePixelRatio)
-    canvas.width = window.innerWidth*0.6*window.devicePixelRatio
+    canvas.width = window.innerWidth*0.6
+    if(device == "PC")
+        canvas.width *= window.devicePixelRatio
     canvas.height = canvas.width*cnvh/cnvw
     let k = canvas.height / cnvh
 
