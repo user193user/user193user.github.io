@@ -1,0 +1,143 @@
+body {
+    background-color: rgb(129, 165, 132);
+    font-family: 'Amatic SC', cursive;
+    font-size: 40px;
+    margin: 0;
+    padding: 0;
+}
+
+.block {
+    width: 90%;
+    padding: 20px;
+    margin: 12px auto;
+    background-color: #eee;
+    border-radius: 20px;
+}
+
+.menu {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: azure;
+    background-color: black;
+    flex-wrap: wrap;
+    opacity: 0.7;
+}
+
+.heading {
+    width: 100%;
+    text-align: center;
+    transition: 1s;
+}
+
+.heading h2 {
+    margin: 10px 0;
+}
+
+.intro:hover .heading {
+    letter-spacing: 5px;
+}
+
+.button {
+    font-size: 30px;
+    text-align: center;
+    width: fit-content;
+}
+
+#wrapper {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 1500px;
+    min-width: none;
+}
+
+#link {
+    margin: 0 20px;
+}
+
+#statue {
+    margin: 0 50px 0 0;
+    float: right;
+    transition: 1s;
+}
+
+.intro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: stretch;
+    transition: 1s;
+}
+
+#introtext {
+    width: 100%;
+    padding: 20px;
+    text-align: justify;
+}
+
+p {
+    margin: 0 10px;
+}
+
+h1 {
+    margin: 20px;
+}
+
+ .intro:hover #statue {
+    margin: 0 150px 0 0;
+ }
+
+ .adv {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    transition: 1s;
+ }
+
+ #omori {
+    margin: 0 50px 0 0;
+    float: left;
+    transition: 1s;
+ }
+
+ .advtext {
+    margin: 10px auto;
+    border: 5px black double;
+    max-width: 800px;
+    min-width: 200px; 
+    padding: 10px;
+    text-align: justify;
+ }
+
+.intro:hover, .adv:hover{
+    transform: translate(0px, -20px);
+}
+
+.floor {
+    background-color: black;
+    opacity: 0.7;
+    text-align: center;
+    transition: 1s;
+}
+
+.floor:hover {
+    color: #eee;
+}
+
+.heading:hover {
+    letter-spacing: 5px;
+}
+
+a {
+    color: #eee;
+    text-decoration: none;
+}
+
+a:hover {
+    color: rgb(161, 161, 161);
+    cursor: pointer;
+}
