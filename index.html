@@ -3,22 +3,54 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" type="text/css" href="css/style.css">
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-	<title>Runner</title>
+	<link rel="stylesheet" type="text/css" href="css/stylemain.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&display=swap" rel="stylesheet">
+    <script src="js/scriptmain.js"></script>
+	<title>Главная</title>
 </head>
 <body id="main">
 	<div id="wrapper">
-		<canvas id="game" width="1000" height="600"></canvas>
-		<h3>СВАЙПАТЬ И КЛИКАТЬ ПО КАНВЕ</h3>
-		<h4>
-			свайп ВВЕРХ или КЛИК - прыжок ВВЕРХ<br>
-			свайп ВНИЗ - рывок ВНИЗ<br>
-			в воздухе можно прыгнуть ещё ОДИН раз
-		</h4>
+        <div class="block menu">
+            <h1>Меню</h1>
+            <p id="links"><a id="link" href="game.html">Игра</a><a id="link" href="rules.html">Правила</a></p>
+        </div>
+		<div class="block heading">
+            <h1>NightmareR</h1>
+        </div>
+        <div class="block intro">
+            <div id="introtext">
+                <p>NightmareR&mdash;опасное приключение, в котором вам предстоит играть за мальчика, 
+                оказавшегося в своих кошмарах. Вместе с ним вы отправитесь в бесконечное путешествие, 
+                чтобы помочь ему выбраться из заточения в своих снах</p>                
+            </div>
+            <div id="statue">
+                <img src="mat/index/statue.png" alt="Тут должна быть статуя">
+            </div>                
+        </div>
+        <div class="block adv">
+            <div id="omori">
+                <a href="https://www.omori-game.com/en"><img src="mat/index/Omori.gif" alt="ВСТАВИТЬ"></a>
+            </div>
+            <div>
+                <div class="advtext">
+                    Благодарим кампанию OMOCAT за предоставление спрайтов для игры.
+                </div>
+                <div class="advtext">
+                    OMORI&mdash;ролевая видеоигра 2020 года, 
+                    разработанная инди-студией Omocat.
+                    Основанная на серии веб-комиксов режиссера Омори, 
+                    она была выпущена в декабре&nbsp;2020. В игре присутствуют 
+                    такие понятия, как тревога и депрессия, 
+                    а также элементы психологического ужаса. 
+                </div>                   
+            </div>
+
+        </div>
+        <div class="block floor">
+            Copyright @ RedFx All Rights Reserved.
+        </div>
 	</div>
-	<script src="js/script.js"></script>
 </body>
 </html>
