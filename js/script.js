@@ -1,4 +1,4 @@
-let canvas = document.getElementById("game")
+﻿let canvas = document.getElementById("game")
 let context = canvas.getContext("2d")
 
 let device
@@ -7,6 +7,9 @@ if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phon
     device = "notPC"
 
 } else device = "PC"
+
+let lstframe = Date.now()
+const normdelay = 7
 
 //global const
 const cnvh = 600
@@ -177,6 +180,17 @@ let kickdx
 
 //global per
 //time
+let platformspawndelay = 70
+let herospritedelay = 10
+let platformspritedelay = 40
+let scoredelay = 20
+let lavadelay = {
+    r: 200,
+    l: 500
+}
+let angledelay = 40
+
+
 let timer = 0
 let herotimer = 0
 let lavatimer = 0
@@ -262,12 +276,14 @@ canvas.addEventListener('mouseup', function(event)
     if(!start)
     {
         start = true
+        lstframe = -1
         game()
     }
     else if(gameover)
     {
         gameover = false
         pregame()
+        lstframe = -1
         game()
     }
     else
@@ -399,6 +415,10 @@ function pregame()
 
 function game()
 {
+    if(lstframe == -1)
+        lstframe = Date.now()
+    else
+        fpscontrol()
     if(!gameover)
         update()
     if(!gameover)
@@ -426,9 +446,11 @@ function update()
         kolspeedup++
     }
     scoretimer++
-    if(scoretimer % 20 == 0)
+    if(scoretimer >= scoredelay)
+    {
         score++
-    scoretimer %= 20
+        scoretimer = 0
+    }
     timer++
     lavatimer++
     herotimer++
@@ -437,7 +459,7 @@ function update()
         hero.blessed = false
     else
         hero.blessedtimer++
-    if(herotimer % 10 == 0)
+    if(herotimer >= herospritedelay)
     {
         herotimer = 0
         if(hero.blessed)
@@ -483,8 +505,11 @@ function updatelets()
     while(j < walls.length)
     {
         walls[j].dstrtimer++
-        if(walls[j].dstrtimer % 40 == 0)
+        if(walls[j].dstrtimer >= platformspritedelay)
+        {
+            walls[j].dstrtimer = 0
             walls[j].curkadr++
+        }
         walls[j].curkadr %= kolwallkadr
 
         if(walls[j].isdead)
@@ -533,11 +558,12 @@ function updatelets()
 function spawn()
 {
     if(lavarange == 0)
-        lavarange = randomInteger(200, 500)
-    lavatimer %= lavarange
-    timer %= 70
-    if(timer == 0)
+        lavarange = randomInteger(lavadelay.r, lavadelay.l)
+    if(lavatimer >= lavarange)
+        lavatimer = 0
+    if(timer >= platformspawndelay)
     {
+        timer = 0
         let availablespawny = []
         let spawnstep = Math.round(canvas.height / 60.0)              ///!!!
         if(spawnstep == 0)                                            ///!!!
@@ -568,7 +594,6 @@ function spawn()
                 y: spawny, 
                 w: spawnw*plobject.plcol.h, 
                 h: plobject.plcol.h, 
-                dx: pldx,
                 kolplpart: spawnw,
             })
             if(Math.random() < 0.4)
@@ -584,7 +609,6 @@ function spawn()
                     y: spawny - wobject.wcol.h*enemies[en].scalek - wobject.wcol.h*enemies[en].scalek / 2, 
                     w: wobject.wcol.w*enemies[en].scalek, 
                     h: wobject.wcol.h*enemies[en].scalek, 
-                    dx: pldx,
                     enemynum: en,
                     curkadr: 0,
                     dstrtimer: 0,
@@ -601,7 +625,6 @@ function spawn()
             y: canvas.height - groundh, 
             w: spawnw*groundh, 
             h: groundh, 
-            dx: pldx,
             kolplpart: spawnw
         })
         lavarange = 0
@@ -788,7 +811,7 @@ function updatefon()
             fonchange++
         }
     }
-    if(angelchangetimer % 40 == 0)
+    if(angelchangetimer >= angledelay)
     {
         angelchangetimer = 0
         for(i in fons)
@@ -1066,10 +1089,14 @@ let requestAnimFrame =
 (
     function () 
     {
-        return 
+        return window.requestAnimationFrame ||
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame ||
+            window.oRequestAnimationFrame ||
+            window.msRequestAnimationFrame ||
             function(callback)
             {
-                window.setTimeout(callback, 1000/60)
+                window.setTimeout(callback, 1000/100)
             }
     }
 )()
@@ -1103,7 +1130,8 @@ window.onresize = function()
 
 function resizeCanvas(startrisize)
 {
-    canvas.width = window.innerWidth*0.6
+    //console.log(window.devicePixelRatio
+    canvas.width = window.innerWidth*0.6//*window.devicePixelRatio
     if(device == "PC")
         canvas.width *= window.devicePixelRatio
     canvas.height = canvas.width*cnvh/cnvw
@@ -1170,6 +1198,7 @@ function resizeCanvas(startrisize)
     ax = Cax * k
     pldx = Cpldx * k 
     kickdx = Ckickdx * k
+
     jumph = canvas.height / 3 
     jerkl = canvas.width / 5
 
@@ -1212,4 +1241,38 @@ function gameOver()
         0 + (canvas.height - replayimg.height*canvas.width*0.3/replayimg.width)/2, 
         canvas.width*0.3, 
         replayimg.height*canvas.width*0.3/replayimg.width)
+}
+
+function fpscontrol()
+{
+    if(start && !gameover)
+    {
+        let curframe = Date.now()
+        let delta = curframe - lstframe
+        adapttoframe(delta)
+        //console.log(delta)
+        lstframe = curframe
+    }
+}
+
+function adapttoframe(delay)
+{
+    console.log(delay / normdelay)
+    let k = delay / normdelay
+    let scale = canvas.height / cnvh
+    ug = Cug * scale * k
+    dg = Cdg * scale * k
+    da = Cda * scale * k
+    ax = Cax * scale * k
+    pldx = Cpldx * scale * k
+    kickdx = Ckickdx * scale * k
+    fondx = Cfondx * scale * k
+
+    platformspawndelay = Math.round(70 / k)
+    herospritedelay = Math.round(10 / k)
+    platformspritedelay = Math.round(40 / k)
+    scoredelay = Math.round(20 / k)
+    lavadelay.r = Math.round(200 / k)
+    lavadelay.l = Math.round(500 / k)
+    angledelay = Math.round(40 / k)
 }
