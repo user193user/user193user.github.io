@@ -1066,14 +1066,10 @@ let requestAnimFrame =
 (
     function () 
     {
-        return window.requestAnimationFrame ||
-            window.webkitRequestAnimationFrame ||
-            window.mozRequestAnimationFrame ||
-            window.oRequestAnimationFrame ||
-            window.msRequestAnimationFrame ||
+        return 
             function(callback)
             {
-                window.setTimeout(callback, 1000/100)
+                window.setTimeout(callback, 1000/60)
             }
     }
 )()
