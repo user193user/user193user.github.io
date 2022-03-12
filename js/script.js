@@ -267,20 +267,60 @@ let touchendY = 0;
 
 canvas.addEventListener('mousedown', function(event) 
 {
-    touchstartX = event.offsetX
-    touchstartY = event.offsetY
+    if(device == "PC")
+    {
+        touchstartX = event.offsetX
+        touchstartY = event.offsetY        
+    }
 }, false);
 
 canvas.addEventListener('mouseup', function(event) 
+{
+    if(device == "PC")
+    {
+        console.log("click")
+        if(!start)
+        {
+            start = true
+            lstframe = -1
+            game()
+        }
+        else if(gameover)
+        {
+            gameover = false
+            pregame()
+            lstframe = -1
+            game()
+        }
+        else
+        {
+            touchendX = event.offsetX
+            touchendY = event.offsetY
+            handleGesture()
+        }        
+    }
+
+}, false); 
+
+canvas.addEventListener('touchstart', function(event) 
+{  
+    touchstartX = event.touches[0].clientX
+    touchstartY = event.touches[0].clientY
+    console.log("touch")
+}, false);
+
+canvas.addEventListener('touchend', function(event) 
 {
     if(!start)
     {
         start = true
         lstframe = -1
+        console.log("touch1")
         game()
     }
     else if(gameover)
     {
+        console.log("touch2")
         gameover = false
         pregame()
         lstframe = -1
@@ -288,8 +328,11 @@ canvas.addEventListener('mouseup', function(event)
     }
     else
     {
-        touchendX = event.offsetX
-        touchendY = event.offsetY
+        console.log("touch3")
+        touchendX = event.changedTouches[0].pageX
+        touchendY = event.changedTouches[0].pageY
+        console.log(touchstartX + " " + touchendX)
+        console.log(touchstartY + " " + touchendY)
         handleGesture()
     }
 }, false); 
