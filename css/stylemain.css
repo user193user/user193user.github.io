@@ -135,3 +135,7 @@ a:hover {
     color: rgb(161, 161, 161);
     cursor: pointer;
 }
+
+.floor::selection {
+    background: transparent;
+ }

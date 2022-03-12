@@ -80,9 +80,17 @@ a:hover {
 }
 
 #company {
-    margin: 10px;
+    margin: 2vh;
 }
 
-#company::selection {
+#recorddiv {
+    margin: 5px 0 0 0;
+}
+
+#record {
+    margin: 1vh auto;
+}
+
+p::selection, a::selection, h1::selection {
     background: transparent;
- }
+}

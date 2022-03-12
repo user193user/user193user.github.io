@@ -31,7 +31,7 @@ body {
 }
 
 .heading h2 {
-    margin: 10px 0;
+    margin: 10px ;
 }
 
 .intro:hover .heading {
@@ -140,4 +140,13 @@ a {
 a:hover {
     color: rgb(161, 161, 161);
     cursor: pointer;
+}
+
+.floor::selection {
+    background: transparent;
+}
+
+span {
+    font-size:larger; 
+    color: #558A84;
 }
