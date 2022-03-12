@@ -1,6 +1,8 @@
 let canvas = document.getElementById("game")
 let context = canvas.getContext("2d")
 
+let maxscore = 0
+
 let device
 if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent)) {
 
@@ -212,7 +214,7 @@ let hero = {
     dx: 0,
     blessed: false,
     blessedtimer: 0,
-    blessedplank: 2000
+    blessedplank: 1500
 }
 //platforms
 let platforms = []
@@ -281,12 +283,18 @@ canvas.addEventListener('mouseup', function(event)
         console.log("click")
         if(!start)
         {
+            let x =  document.getElementById("music");
+            x.currentTime = 0;
+            x.play()
             start = true
             lstframe = -1
             game()
         }
         else if(gameover)
         {
+            let x =  document.getElementById("music");
+            x.currentTime = 0;
+            x.play()
             gameover = false
             pregame()
             lstframe = -1
@@ -313,14 +321,18 @@ canvas.addEventListener('touchend', function(event)
 {
     if(!start)
     {
+        let x =  document.getElementById("music");
+        x.currentTime = 0;
+        x.play()
         start = true
         lstframe = -1
-        console.log("touch1")
         game()
     }
     else if(gameover)
     {
-        console.log("touch2")
+        let x =  document.getElementById("music");
+        x.currentTime = 0;
+        x.play()
         gameover = false
         pregame()
         lstframe = -1
@@ -328,7 +340,6 @@ canvas.addEventListener('touchend', function(event)
     }
     else
     {
-        console.log("touch3")
         touchendX = event.changedTouches[0].pageX
         touchendY = event.changedTouches[0].pageY
         console.log(touchstartX + " " + touchendX)
@@ -394,6 +405,8 @@ function swipeRight()
 }
 ////////////////////////////////////////////
 
+
+
 angelimg.onload = function () 
 {
     pregame()
@@ -406,8 +419,10 @@ angelimg.onload = function ()
         startimg.height*canvas.width*0.2/startimg.width)
 }
 
+
 function pregame()
 {
+    //document.getElementsByName("music")[0].start = true
     score = 0
     scoretimer = 0
     Cpldx = 5
@@ -434,7 +449,7 @@ function pregame()
     platforms.splice(0,platforms.length)
     walls.splice(0,walls.length)
     lavas.splice(0,lavas.length)
-    resizeCanvas(true)
+    resizeCanvas()
     let pokrx = 0
     let kolfon = 0
     while(pokrx < canvas.width)
@@ -1112,7 +1127,7 @@ function drawscore()
     let text = String(score)
     while(text.length < 4)
         text = "0" + text
-    text = "Score: " + text
+    text = "Рекорд: " + text
     let textx = canvas.width - text.length*(canvas.height / cnvh)*14
     let texty = canvas.height / 20
     context.fillText(text, textx, texty);
@@ -1171,18 +1186,11 @@ window.onresize = function()
     }
 }
 
-function resizeCanvas(startrisize)
+function resizeCanvas()
 {
+    groundh = Math.round( cnvh / 30)
 
-    //console.log(window.devicePixelRatio
-    //canvas.width = window.innerWidth*0.6//*window.devicePixelRatio
-    //if(device == "PC")
-    //    canvas.width *= window.devicePixelRatio
-    //canvas.height = canvas.width*cnvh/cnvw
-    let k = 1
-    groundh = Math.round(k * cnvh / 30)
-
-    hero.hcol.h = Math.round(k * cnvh / 8)
+    hero.hcol.h = Math.round(cnvh / 8)
     hero.hcol.w = Math.round(hero.hcol.h / 2)
     hero.himg.h = Math.round(hero.hcol.h / 0.8)
     hero.himg.w = hero.himg.h
@@ -1235,12 +1243,16 @@ function resizeCanvas(startrisize)
 
 function gameOver()
 {
+    let x =  document.getElementById("music");
+    x.pause()
     context.drawImage(menuimg, 0, 0, canvas.width, canvas.height)
     context.drawImage(replayimg, 
         canvas.width*0.35, 
         0 + (canvas.height - replayimg.height*canvas.width*0.3/replayimg.width)/2, 
         canvas.width*0.3, 
         replayimg.height*canvas.width*0.3/replayimg.width)
+    document.getElementById("record").innerHTML = "Рекорд: " + Math.max(maxscore, score);
+    maxscore = Math.max(maxscore, score)
 }
 
 function fpscontrol()
