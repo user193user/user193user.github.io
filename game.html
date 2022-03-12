@@ -10,11 +10,16 @@
 	<title>Runner</title>
 </head>
 <body id="main">
+	<audio id="music" src="mat/music.mp3" controls hidden="true">
+	</audio>
 	<div id="wrapper">
 		<div class="block">
 			<h1>Игра</h1>
 			<p id="links"><a id="link" href="index.html">Меню</a><a id="link" href="rules.html">Правила</a></p>
 		</div>
+		<div class="block" id="recorddiv">
+            <p id="record">(Когда-нибудь ты проиграешь)</p>
+        </div>
 		<div class="bg">
 			<canvas id="game" width="1000" height="500" style="display: flex; width: 100%;"></canvas>	
 		</div>
