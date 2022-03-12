@@ -17,8 +17,8 @@ const normdelay = 7
 const cnvh = 500
 const cnvw = 1000
 const Cgroundh = 10
-const Cug = 0.4
-const Cdg = 0.4
+let Cug = 0.4
+let Cdg = 0.4
 const Cda = 14
 const Cax = 1
 const Ckickdx = 20
@@ -214,7 +214,7 @@ let hero = {
     dx: 0,
     blessed: false,
     blessedtimer: 0,
-    blessedplank: 1500
+    blessedplank: 1500000
 }
 //platforms
 let platforms = []
@@ -436,7 +436,7 @@ function pregame()
     hero.dy = 0
     hero.dx = 0
     kolnimbs = 0
-    hero.blessed = false
+    hero.blessed = true
     timer = 0
     lavatimer = 0
     herotimer = 0
@@ -487,20 +487,20 @@ function game()
 
 function update()
 {
-    if(score == 400 && kolspeedup == 0)
-    {
-        Cpldx *= 1.1
-        Cfondx *= 1.1
-        pldx = canvas.height / cnvh * Cpldx
-        fondx = canvas.height / cnvh * Cfondx
+    if(score == 145 && kolspeedup == 0)
+    {/*
+        Cpldx *= 1
+        Cfondx *= 1
+        pldx = Cpldx
+        fondx = Cfondx*/
         kolspeedup++
     }
     if(score == 800 && kolspeedup == 1)
     {
-        Cpldx *= 1.1
-        Cfondx *= 1.1
-        pldx = canvas.height / cnvh * Cpldx
-        fondx = canvas.height / cnvh * Cfondx
+        Cpldx *= 5
+        Cfondx *= 5
+        pldx = Cpldx
+        fondx = Cfondx
         kolspeedup++
     }
     scoretimer++
@@ -508,6 +508,21 @@ function update()
     {
         score++
         scoretimer = 0
+        ////////test
+        if(score > 135 && score < 145)
+        {
+        platformspawndelay = Math.round(platformspawndelay / 1.04)
+        Cpldx *= 1.04
+        Cfondx *= 1.04
+        Cdg *= 1.02
+        Cug *= 1.02
+        pldx = Cpldx
+        fondx = Cfondx
+        ug *= Cug
+        dg *= Cdg
+        }
+        console.log(platformspawndelay)
+        /////////
     }
     timer++
     lavatimer++
@@ -1278,12 +1293,4 @@ function adapttoframe(delay)
     pldx = Cpldx * k
     kickdx = Ckickdx * k
     fondx = Cfondx * k
-
-    platformspawndelay = Math.round(70 / k)
-    herospritedelay = Math.round(10 / k)
-    platformspritedelay = Math.round(40 / k)
-    scoredelay = Math.round(20 / k)
-    lavadelay.r = Math.round(200 / k)
-    lavadelay.l = Math.round(500 / k)
-    angledelay = Math.round(40 / k)
 }
