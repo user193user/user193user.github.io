@@ -4,14 +4,23 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" type="text/css" href="css/style.css">
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&display=swap" rel="stylesheet">
 	<title>Runner</title>
 </head>
 <body id="main">
 	<div id="wrapper">
-		<canvas id="game" width="10" height="6"></canvas>
+		<div class="block">
+			<h1>Игра</h1>
+			<p id="links"><a id="link" href="index.html">Меню</a><a id="link" href="rules.html">Правила</a></p>
+		</div>
+		<div class="bg">
+			<canvas id="game" width="1000" height="500" style="display: flex; width: 100%;"></canvas>	
+		</div>
+		<div class="block floor">
+            <p id="company">Copyright @ RedFx All Rights Reserved.</p>
+        </div>
 	</div>
 	<script src="js/script.js"></script>
 </body>
