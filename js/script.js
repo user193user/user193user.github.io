@@ -1,4 +1,4 @@
-﻿let canvas = document.getElementById("game")
+let canvas = document.getElementById("game")
 let context = canvas.getContext("2d")
 
 let device
@@ -12,8 +12,8 @@ let lstframe = Date.now()
 const normdelay = 7
 
 //global const
-const cnvh = 600
-const cnvw = 1200
+const cnvh = 500
+const cnvw = 1000
 const Cgroundh = 10
 const Cug = 0.4
 const Cdg = 0.4
@@ -573,7 +573,7 @@ function spawn()
         {
             let flag = true
             for(let i in platforms)
-                if(platforms[i].x + platforms[i].w + plobject.plmargin.right > canvas.clientWidth)
+                if(platforms[i].x + platforms[i].w + plobject.plmargin.right > canvas.width)
                     if(tempy >= platforms[i].y - plobject.plmargin.top && 
                         tempy <= platforms[i].y + plobject.plmargin.bottom + platforms[i].h)
                     {
@@ -662,14 +662,14 @@ function move()
                     herorunkadr = 0
                     break
                 }
-            if(hero.hcol.y - hero.dy < canvas.clientHeight - hero.hcol.h - groundh && flag)
+            if(hero.hcol.y - hero.dy < canvas.height - hero.hcol.h - groundh && flag)
             {
                 hero.hcol.y -= hero.dy
                 hero.dy -= dg
             }
             else if(flag)
             {
-                hero.hcol.y = canvas.clientHeight - hero.hcol.h - groundh
+                hero.hcol.y = canvas.height - hero.hcol.h - groundh
                 hero.dy = 0
                 jumpscnt = 0
                 isjumping = false
@@ -1070,7 +1070,7 @@ function drawscore()
     while(text.length < 4)
         text = "0" + text
     text = "Score: " + text
-    let textx = canvas.width - text.length*(canvas.height / cnvh)*16
+    let textx = canvas.width - text.length*(canvas.height / cnvh)*14
     let texty = canvas.height / 20
     context.fillText(text, textx, texty);
 }
@@ -1078,11 +1078,11 @@ function drawscore()
 var TO_RADIANS = Math.PI/180; 
 function drawRotatedImage(image, x, y, angle, w, h)
 { 
-    context.save(); 
+    context.save();
     context.translate(x, y);
     context.rotate(angle * TO_RADIANS);
     context.drawImage(image, -(w/2), -(h/2), w, h);
-    context.restore(); 
+    context.restore();
 }
 
 let requestAnimFrame = 
@@ -1105,7 +1105,7 @@ let requestAnimFrame =
 
 window.onresize = function() 
 {
-    resizeCanvas(false)
+    //resizeCanvas(false)
     if(!start)
     {
         render()
@@ -1130,104 +1130,61 @@ window.onresize = function()
 
 function resizeCanvas(startrisize)
 {
-    //console.log(window.devicePixelRatio
-    canvas.width = window.innerWidth*0.6//*window.devicePixelRatio
-    if(device == "PC")
-        canvas.width *= window.devicePixelRatio
-    canvas.height = canvas.width*cnvh/cnvw
-    let k = canvas.height / cnvh
 
+    //console.log(window.devicePixelRatio
+    //canvas.width = window.innerWidth*0.6//*window.devicePixelRatio
+    //if(device == "PC")
+    //    canvas.width *= window.devicePixelRatio
+    //canvas.height = canvas.width*cnvh/cnvw
+    let k = 1
     groundh = Math.round(k * cnvh / 30)
 
     hero.hcol.h = Math.round(k * cnvh / 8)
     hero.hcol.w = Math.round(hero.hcol.h / 2)
     hero.himg.h = Math.round(hero.hcol.h / 0.8)
     hero.himg.w = hero.himg.h
+
     firstherox = hero.himg.w - hero.hcol.w
-    if(startrisize)
-    {
-        hero.hcol.y = canvas.height - hero.hcol.h - groundh
-        hero.hcol.x = firstherox
-    }
-    else
-    {
-        hero.hcol.y = hero.hcol.y / predk * k
-        hero.hcol.x = hero.hcol.x / predk * k
-    }
-    wobject.wcol.h = Math.round(k*0.05*cnvh)
+
+    hero.hcol.y = canvas.height - hero.hcol.h - groundh
+    hero.hcol.x = firstherox
+    
+    wobject.wcol.h = Math.round(0.05*cnvh)
     wobject.wcol.w = wobject.wcol.h
 
-    plobject.plcol.w = Math.round(k*cnvw/4)
-    plobject.plcol.h = Math.round(k*cnvh/25)
+    plobject.plcol.w = Math.round(cnvw/4)
+    plobject.plcol.h = Math.round(cnvh/25)
     plobject.plmargin.top = canvas.height / 8
     plobject.plmargin.bottom = canvas.height / 8
     minspawny = wobject.wcol.h*3
-    maxspawny = canvas.height - hero.hcol.h - groundh - Math.round(canvas.height / 60.0)
+    maxspawny = canvas.height - hero.hcol.h - groundh - 20
 
     pobject.w = groundh
     pobject.h = pikesimg.height * pobject.w / (pikesimg.width / kolpikekadr)
 
-    for(i in platforms)
-    {
-        platforms[i].w = platforms[i].w / predk * k
-        platforms[i].h = platforms[i].h / predk * k
-        platforms[i].x = platforms[i].x / predk * k
-        platforms[i].y = platforms[i].y / predk * k
-    }
-
-    for(i in walls)
-    {
-        walls[i].w = walls[i].w / predk * k
-        walls[i].h = walls[i].h / predk * k
-        walls[i].x = walls[i].x / predk * k
-        walls[i].y = walls[i].y / predk * k
-    }
-
     lavawidth = canvas.width / 5
-    for(i in lavas)
-    {
-        lavas[i].w = lavas[i].w / predk * k
-        lavas[i].h = lavas[i].h / predk * k
-        lavas[i].x = lavas[i].x / predk * k
-        lavas[i].y = canvas.height - groundh
-    }
 
-    ug = Cug * k
-    dg = Cdg * k
-    da = Cda * k
-    ax = Cax * k
-    pldx = Cpldx * k 
-    kickdx = Ckickdx * k
+    ug = Cug
+    dg = Cdg
+    da = Cda
+    ax = Cax
+    pldx = Cpldx
+    kickdx = Ckickdx
 
-    jumph = canvas.height / 3 
+    jumph = canvas.height / 3
     jerkl = canvas.width / 5
 
-    fondx = k * Cfondx
+    fondx = Cfondx
     fonh = canvas.height
     fonw = Math.round(fonimg.width * fonh / fonimg.height)
-    for(i in fons)
-    {
-        if(i == 0)
-            fons[i].x = fons[i].x / predk * k
-        else
-            fons[i].x = fons[i-1].x + fonw
-    }
 
     fobject.w = groundh
     fobject.h = flpartimg.height * fobject.w / (flpartimg.width / kolfloorkadr)
-    for(i in floors)
-    {
-        if(i == 0)
-            floors[i].x = floors[i].x / predk * k
-        else
-            floors[i].x = floors[i-1].x + groundh
-    }
     nimbicon.w = canvas.width / 5
     nimbicon.h = nimb1img.height * nimbicon.w / nimb1img.width
     nimbicon.x = canvas.width - nimbicon.w / 3 * 2.2 
     nimbicon.y = 0
     nimbicon.dy = nimbicon.h / 4
-    predk = k
 
     context.fillStyle = "#B4B4B4"
     context.font = String(canvas.height / 20) + "px cursive"
@@ -1257,16 +1214,15 @@ function fpscontrol()
 
 function adapttoframe(delay)
 {
-    console.log(delay / normdelay)
+    //console.log(delay / normdelay)
     let k = delay / normdelay
-    let scale = canvas.height / cnvh
-    ug = Cug * scale * k
-    dg = Cdg * scale * k
-    da = Cda * scale * k
-    ax = Cax * scale * k
-    pldx = Cpldx * scale * k
-    kickdx = Ckickdx * scale * k
-    fondx = Cfondx * scale * k
+    ug = Cug * k
+    dg = Cdg * k
+    da = Cda * k
+    ax = Cax * k
+    pldx = Cpldx * k
+    kickdx = Ckickdx * k
+    fondx = Cfondx * k
 
     platformspawndelay = Math.round(70 / k)
     herospritedelay = Math.round(10 / k)
