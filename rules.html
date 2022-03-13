@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&display=swap" rel="stylesheet">
+    <script src="js/gift1.js"></script>
 	<title>Правила</title>
 </head>
 <body id="main">
@@ -85,10 +86,13 @@
                 </p>          
             </div>
             <div id="gifdiv" style="width: 40%">
-                <img id="gif" src="mat/index/Snow_Angel.gif" alt="purple enemies">
+                <img id="gif" src="mat/index/Snow_Angel.gif" alt="purple enemies" 
+                onmousedown="this.src=`mat/index/SnowAngelWalk.gif`"
+                onmouseup="this.src=`mat/index/Snow_Angel.gif`"
+                onmouseleave="this.src=`mat/index/Snow_Angel.gif`">
             </div>  
         </div>
-        <div class="block floor">
+        <div class="block floor" onclick="ask()">
             Copyright @ RedFx All Rights Reserved.
         </div>
 	</div>

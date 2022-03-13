@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&display=swap" rel="stylesheet">
+    <script src="js/gift1.js"></script>
 	<title>Об авторе</title>
 </head>
 <body id="main">
@@ -21,7 +22,7 @@
             <div class="heading">
                 <h2>RedFx</h2>
             </div>
-            <img src="mat/index/logo.svg" alt="Logo" width="15%">
+            <img id="logo" src="mat/index/logo.svg" alt="Logo" width="15%">
             <div id="introtext">
                 <p>
                     <span>RedFx</span> - кампания, специализирующаяся на разработке приложений и игр
@@ -32,7 +33,7 @@
         </div>
         <div class="block adv">
             <div id="photodiv">
-                <img id = "photo" src="mat/index/photo.png" alt="ВСТАВИТЬ">
+                <a href="gen.html"><img id = "photo" src="mat/index/photo.png" alt="ВСТАВИТЬ"></a>
             </div>
             <div>
                 <div class="advtext gradient">
@@ -49,7 +50,7 @@
                 </div>                   
             </div>
         </div>
-        <div class="block floor">
+        <div class="block floor" onclick="ask()">
             Copyright @ RedFx All Rights Reserved.
         </div>
 	</div>
