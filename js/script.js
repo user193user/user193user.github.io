@@ -2,8 +2,8 @@ let canvas = document.getElementById("game")
 let context = canvas.getContext("2d")
 
 let maxscore = 0
+let duration = 127
 
-let device
 if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent)) {
 
     device = "notPC"
@@ -214,7 +214,7 @@ let hero = {
     dx: 0,
     blessed: false,
     blessedtimer: 0,
-    blessedplank: 1500000
+    blessedplank: 1500
 }
 //platforms
 let platforms = []
@@ -436,7 +436,7 @@ function pregame()
     hero.dy = 0
     hero.dx = 0
     kolnimbs = 0
-    hero.blessed = true
+    hero.blessed = false
     timer = 0
     lavatimer = 0
     herotimer = 0
@@ -487,20 +487,49 @@ function game()
 
 function update()
 {
-    if(score == 145 && kolspeedup == 0)
-    {/*
-        Cpldx *= 1
-        Cfondx *= 1
-        pldx = Cpldx
-        fondx = Cfondx*/
-        kolspeedup++
-    }
-    if(score == 800 && kolspeedup == 1)
+    if(document.getElementById("music").currentTime > duration)
     {
-        Cpldx *= 5
-        Cfondx *= 5
+        document.getElementById("music").currentTime = 0
+        document.getElementById("music").play()
+    }
+        
+    if(score == 140 && kolspeedup == 0)
+    {
+        Cpldx *= 1.06
+        Cfondx *= 1.06
+        Cdg *= 1.06
+        Cug *= 1.06
         pldx = Cpldx
         fondx = Cfondx
+        ug = Cug
+        dg = Cdg
+        platformspawndelay = Math.round(platformspawndelay / 1.1)
+        kolspeedup++
+    }
+    if(score == 400 && kolspeedup == 1)
+    {
+        Cpldx *= 1.06
+        Cfondx *= 1.06
+        Cdg *= 1.06
+        Cug *= 1.06
+        pldx = Cpldx
+        fondx = Cfondx
+        ug = Cug
+        dg = Cdg
+        platformspawndelay = Math.round(platformspawndelay / 1.1)
+        kolspeedup++
+    }
+    if(score == 800 && kolspeedup == 2)
+    {
+        Cpldx *= 1.05
+        Cfondx *= 1.05
+        Cdg *= 1.05
+        Cug *= 1.05
+        pldx = Cpldx
+        fondx = Cfondx
+        ug = Cug
+        dg = Cdg
+        platformspawndelay = Math.round(platformspawndelay / 1.05)
         kolspeedup++
     }
     scoretimer++
@@ -509,6 +538,7 @@ function update()
         score++
         scoretimer = 0
         ////////test
+        /*
         if(score > 135 && score < 145)
         {
         platformspawndelay = Math.round(platformspawndelay / 1.04)
@@ -518,10 +548,9 @@ function update()
         Cug *= 1.02
         pldx = Cpldx
         fondx = Cfondx
-        ug *= Cug
-        dg *= Cdg
-        }
-        console.log(platformspawndelay)
+        ug = Cug
+        dg = Cdg
+        }*/
         /////////
     }
     timer++
@@ -638,7 +667,7 @@ function spawn()
     {
         timer = 0
         let availablespawny = []
-        let spawnstep = Math.round(canvas.height / 60.0)              ///!!!
+        let spawnstep = Math.round(canvas.height / 50.0)              ///!!!
         if(spawnstep == 0)                                            ///!!!
             spawnstep = 1                                             ///!!!
         let tempy = maxspawny
