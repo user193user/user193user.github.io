@@ -62,13 +62,15 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    transition: 1s;
     flex-wrap: wrap;
+    transition: 1s;
+    overflow: hidden;
 }
 
 #introtext {
-    max-width: 800px;
-    min-width: 200px;
+    display: flex;
+    max-width: 900px;
+    min-width: 150px;
     text-align: justify;
 }
 
@@ -80,8 +82,8 @@ h1 {
     margin: 20px;
 }
 
- .intro:hover #statue {
-    margin: 0 150px 0 0;
+ .intro:hover #statuediv {
+    transform: translate(-100px, 0px);
  }
 
  .adv {
@@ -92,13 +94,28 @@ h1 {
     transition: 1s;
  }
 
- #omori {
-    margin: 0 50px 0 0;
-    float: left;
+ #omoridiv, #statuediv {
+    height: 100%;
+    min-width: 200px;
     transition: 1s;
- }
+}
 
- .advtext {
+#omoridiv {
+    width: 25%;
+}
+
+#statuediv {
+    width: 20%;
+    margin: 0;
+}
+
+#omori, #statue{
+    width: 100%;
+    min-width: 200px;
+    margin: auto;
+}
+
+.advtext {
     margin: 10px auto;
     border: 5px black double;
     max-width: 800px;
@@ -138,4 +155,9 @@ a:hover {
 
 .floor::selection {
     background: transparent;
- }
+}
+
+#cat {
+    color: black;
+    text-decoration: none;
+}

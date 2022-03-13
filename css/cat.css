@@ -1,0 +1,24 @@
+#cat{
+    width: 100%;
+    opacity: 0;
+}
+
+#cat:hover{
+    opacity: 1;
+}
+
+body {
+    background-color: black;
+}
+
+* {
+    cursor: url("../mat/index/cursor.png") 50 50, auto;
+}
+
+p {
+    font-family: 'Amatic SC', cursive;
+    color: #eee;
+    text-align: center;
+    font-size: 40px;
+    margin: 0;
+}

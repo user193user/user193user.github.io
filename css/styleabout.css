@@ -148,3 +148,11 @@ span {
     border-image-slice: 1;
     transition: 0s;   
 }
+
+#logo {
+    transition: 1s;
+}
+
+.intro:hover #logo{
+    transform: rotate(360deg) scale(0.7);
+}
