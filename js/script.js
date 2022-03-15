@@ -182,6 +182,7 @@ let kickdx
 
 //global per
 //time
+let Cplatformspawndelay = 70
 let platformspawndelay = 70
 let herospritedelay = 10
 let platformspritedelay = 40
@@ -266,6 +267,49 @@ let touchstartX = 0;
 let touchstartY = 0;
 let touchendX = 0;
 let touchendY = 0;
+
+document.addEventListener('keydown', logKey);
+
+function logKey(e) 
+{
+	console.log(e.code)
+	if(start && !gameover)
+	    switch(e.code)
+	    {
+	        case "KeyW":
+	            swipeUp()
+	            break
+	        case "KeyD":
+	            swipeRight()
+	            break
+	        case "KeyS":
+	            swipeDown()
+	            break
+	    }
+	else
+	{
+		console.log(start)
+		if(!start)
+        {
+            let x =  document.getElementById("music");
+            x.currentTime = 0;
+            x.play()
+            start = true
+            lstframe = -1
+            game()
+        }
+        else if(gameover)
+        {
+            let x =  document.getElementById("music");
+            x.currentTime = 0;
+            x.play()
+            gameover = false
+            pregame()
+            lstframe = -1
+            game()
+        }
+	}
+}
 
 canvas.addEventListener('mousedown', function(event) 
 {
@@ -427,6 +471,7 @@ function pregame()
     scoretimer = 0
     Cpldx = 5
     Cfondx = 4
+    Cplatformspawndelay = 70
 
     isjumping = false
     isfallingjerk = false
@@ -503,7 +548,8 @@ function update()
         fondx = Cfondx
         ug = Cug
         dg = Cdg
-        platformspawndelay = Math.round(platformspawndelay / 1.1)
+        Cplatformspawndelay = Math.round(Cplatformspawndelay / 1.1)
+        platformspawndelay = Cplatformspawndelay
         kolspeedup++
     }
     if(score == 400 && kolspeedup == 1)
@@ -516,7 +562,8 @@ function update()
         fondx = Cfondx
         ug = Cug
         dg = Cdg
-        platformspawndelay = Math.round(platformspawndelay / 1.1)
+        Cplatformspawndelay = Math.round(Cplatformspawndelay / 1.1)
+        platformspawndelay = Cplatformspawndelay
         kolspeedup++
     }
     if(score == 800 && kolspeedup == 2)
@@ -529,7 +576,8 @@ function update()
         fondx = Cfondx
         ug = Cug
         dg = Cdg
-        platformspawndelay = Math.round(platformspawndelay / 1.05)
+        Cplatformspawndelay = Math.round(Cplatformspawndelay / 1.05)
+        platformspawndelay = Cplatformspawndelay
         kolspeedup++
     }
     scoretimer++
@@ -1322,4 +1370,12 @@ function adapttoframe(delay)
     pldx = Cpldx * k
     kickdx = Ckickdx * k
     fondx = Cfondx * k
+
+    platformspawndelay = Cplatformspawndelay / k
+	herospritedelay = 10 / k
+	platformspritedelay = 40 / k
+	scoredelay = 20 / k
+	lavadelay.r = 200 / k
+	lavadelay.l = 500 / k
+	angledelay = 40 / k
 }
